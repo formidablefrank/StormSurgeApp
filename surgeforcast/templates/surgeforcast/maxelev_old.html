@@ -1,0 +1,61 @@
+{% extends 'surgeforcast/base.html' %}
+
+{% block content %}
+  <script type="text/javascript">
+
+    var elements=[]
+    {% for element in all_elements %}
+      var triangle=new google.maps.Polygon({
+        paths:[{lat: parseFloat('{{element.y_1}}') , lng: parseFloat('{{element.x_1}}')},{lat: parseFloat('{{element.y_2}}') , lng: parseFloat('{{element.x_2}}')},{lat: parseFloat('{{element.y_3}}') , lng: parseFloat('{{element.x_3}}')},{lat: parseFloat('{{element.y_1}}') , lng: parseFloat('{{element.x_1}}')}],
+        strokeColor: '#000000',
+        strokeOpacity: 0,
+        strokeWeight: 0,
+        fillColor: '#FF0000',
+        fillOpacity: 0.5
+      })
+      triangle.setMap(map);
+      elements.push(triangle);
+    
+    {%endfor%}
+    
+    var i=0;
+    {% for elev in all_max_elev %}
+      elements[i].setOptions({fillColor: '#'+ ('{{elev.color}}'.substr(3))});
+      if ('{{elev.color}}' == '#00ffffff'){
+        elements[i].setOptions({fillOpacity: 0});
+      }
+      i=i+1;
+    {%endfor %}
+
+    locations=[]
+    elevations=[]
+    towns=[]
+    {% for affected_location in all_affected_locations %}
+      console.log('{{affected_location.town_id.lat}}');
+      console.log('{{affected_location.town_id.lon}}');
+      var lati = parseFloat('{{affected_location.town_id.lat}}');
+      var long = parseFloat('{{affected_location.town_id.lon}}');
+      var loc = {lat: lati, lng: long};
+      locations.push(loc);
+      elevations.push('{{affected_location.max_elev}}');
+      towns.push('{{affected_location.town_id.town_name}}');
+      console.log(elevations[j])
+    {% endfor %}
+
+
+    var j ;
+    infowindows=[]
+    for (j=0; j<locations.length;j++){
+      var infowindow = new google.maps.InfoWindow({
+        content: elevations[j]
+      });
+
+      var marker=new google.maps.Marker({
+        position: locations[j],
+        map: map,
+        title: 'expect a maximum water elevation of '+ elevations[j] + ' m in ' + towns[j]
+      });
+
+    }
+  </script>
+{%endblock%}

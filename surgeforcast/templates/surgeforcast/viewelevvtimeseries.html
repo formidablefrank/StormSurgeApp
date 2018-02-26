@@ -1,0 +1,25 @@
+{% extends 'surgeforcast/base.html' %}
+
+{% block content %}
+  //load colors
+  var max_elev=[];
+  {% for elev in all_max_elev %}
+    max_elev.push('{{elev.color}}')
+  {%endfor %}    
+
+  // Construct the polygon.
+  var triangles=[]
+  var j;
+  for(j=0;j<elements.length;j++){
+    var triangle=new google.maps.Polygon({
+      paths:triangleCoords[j],
+      strokeColor: '#FF0000',
+      strokeOpacity: 0,
+      strokeWeight: .5,
+      fillColor: '#'+max_elev[j].substr(3),
+      fillOpacity: .5
+    })
+    triangles.push(triangle);
+    triangles[j].setMap(map);
+  } 
+{%endblock%}

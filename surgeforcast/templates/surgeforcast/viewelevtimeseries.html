@@ -1,0 +1,71 @@
+{% extends 'surgeforcast/base.html' %}
+
+{% block content %}
+  <button type="button" id="startBtn">Start Animation</button>
+  <button type="button" id="stopBtn" >Stop Animation</button>
+  <button type="button" id="resetBtn">Reset</button>
+
+  <script type="text/javascript">
+    myKmlOptions={
+      suppressInfoWindows: true,
+      preserveViewport: true,
+    }    
+
+    var kmlFrame=new google.maps.KmlLayer("https://raw.githubusercontent.com/savanah18/Storm-Surge-Files/master/kml%20files/kml421.kml",myKmlOptions)
+    kmlFrame.setMap(map);
+
+    var kmlFrames=[];x=-1
+    var iterator;
+    for(iterator=105;iterator<115;iterator++){
+      src="https://raw.githubusercontent.com/savanah18/Storm-Surge-Files/master/kml%20files/"+'kml'+(iterator*10+1)+".kml"
+      kmlFrames[iterator-105]=new google.maps.KmlLayer(src,myKmlOptions);  
+
+    }
+
+
+    time=0;
+    var continueAnimating=true;
+    function animateKML(kmlLayer){
+      //kmlLayer.setMap(null);
+      if(!continueAnimating){return;}
+      if(time>180){
+       time=0;
+      }
+      if(time%20==0){
+        //jQuery("#map").find("img[src*='kml']").css("opacity","0.0");
+        if(time-1<0){
+          kmlFrames[9].setMap(null);
+        }
+        else{
+          kmlFrames[time/20 - 1].setMap(null);
+        }
+        console.log(time)
+        kmlFrames[time/20].setMap(map);
+      }
+      time++;
+      anim=requestAnimationFrame(animateKML);
+    }
+
+    function cancelAnimation(){
+      cancelAnimationFrame(anim);
+    }
+
+
+
+    var el = document.getElementById("startBtn");
+    if (el.addEventListener)
+      el.addEventListener("click", animateKML, false);
+    else if (el.attachEvent)
+      el.attachEvent('onclick', animateKML);  
+
+    var el2 = document.getElementById("stopBtn");
+    if (el2.addEventListener)
+      el2.addEventListener("click", cancelAnimation, false);
+    else if (el2.attachEvent)
+      el2.attachEvent('onclick', cancelAnimation);  
+
+
+
+  </script>
+
+{%endblock%}

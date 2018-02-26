@@ -1,0 +1,80 @@
+{% extends 'surgeforcast/base.html' %}
+
+{% block content %}
+
+  <script type="text/javascript">
+
+    var myKmlOptions={
+      suppressInfoWindows: true,
+      preserveViewport: false,
+      map: map
+    };
+
+
+    //MaxSurges
+    var kmlLayers=[]
+    {% for elev in all_max_elev %} 
+      var kmlLayer = new google.maps.KmlLayer('{{elev.kmlFile}}',myKmlOptions)
+      kmlLayers.push(kmlLayer)
+    {% endfor %}   
+
+    for(var j=0;j<kmlLayers.length;j++){
+      kmlLayers[j].setMap(map);
+    }
+    /*var kmlLayer = new google.maps.KmlLayer('https://raw.githubusercontent.com/savanah18/Storm-Surge-Files/1d2038593e5b2a3b6df15df6e0982bacdab995eb/kml%20files/temp.kml',myKmlOptions)    
+    kmlLayer.setMap(map)*/
+
+    //load affected locations
+    locations=[]
+    elevations=[]
+    towns=[]
+    {% for affected_location in all_affected_locations %} 
+      var lati = parseFloat('{{affected_location.town_id.lat}}');
+      var long = parseFloat('{{affected_location.town_id.lon}}');
+      var loc = {lat: lati, lng: long};
+      locations.push(loc);
+      elevations.push('{{affected_location.max_elev}}');
+      towns.push('{{affected_location.town_id.town_name}}');
+    {% endfor %}
+
+    var j ;
+    infowindows=[]
+    for (j=0; j<locations.length;j++){
+      var infowindow = new google.maps.InfoWindow({
+        content: elevations[j]
+      });
+
+      var marker=new google.maps.Marker({
+        position: locations[j],
+        map: map,
+        title: 'expect a maximum water elevation of '+ elevations[j] + ' m in ' + towns[j]
+      });
+
+    }
+
+
+    var earliest_surge_loc;
+    var lati;
+    var long;    
+    var earliest_surge_dir;
+    var earliest_surge_dat_time;  
+    {% for early in earliest_surge %} 
+       lati = parseFloat('{{early.lat}}');
+       long = parseFloat('{{early.lon}}');
+      var earliest_surge_loc = {lat: lati, lng: long};
+      var earliest_surge_dat_time='{{early.date_time}}'
+      var earliest_surge_dir='{{early.direction}}'
+
+
+
+    {% endfor %}
+
+    var marker_early=new google.maps.Marker({
+      position: earliest_surge_loc ,
+      map: map,
+      title: 'expect a surge on ' + earliest_surge_dat_time + ' at ' + earliest_surge_dir
+    }); 
+
+
+  </script>
+{%endblock%} 
