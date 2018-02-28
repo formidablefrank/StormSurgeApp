@@ -1,8 +1,15 @@
 from maxkmlgenerator import*
 
+
+
+
 if __name__=="__main__":
+	programInfo = " This program produces kml file for our gmaps to display.\n It receives files from ADCIRC inputs(fort.14) and outputs(fort.63).\n Users also have to specify the typhoone name, event it and maxsurge id for file-naming puposes.\n Shapfiles will also be passed and prvince filters to minimize the area of concern and to only include the land area of each province filters.\n"
+
+
 	#check for command line arguments:
 	if len(sys.argv) == 1:
+		print(programInfo)
 		print("use 'python "+sys.argv[0]+" help' for usage")
 	elif len(sys.argv) == 2: 
 		if sys.argv[1] == "help":
